@@ -46,6 +46,8 @@ class PlaySoundsViewController: UIViewController {
             audioFile = nil
         }
         
+        sliderView.value = UserDefaults.standard.float(forKey: SliderValueKey)
+        
         setUserInterfaceToPlayMode(false)
     }
     
@@ -69,6 +71,9 @@ class PlaySoundsViewController: UIViewController {
         
         // Set the UI
         setUserInterfaceToPlayMode(true)
+        
+        // Save the slider location
+        UserDefaults.standard.set(sliderView.value, forKey: SliderValueKey)
         
     }
     

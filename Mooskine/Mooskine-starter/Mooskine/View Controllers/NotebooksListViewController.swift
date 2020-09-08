@@ -14,6 +14,8 @@ class NotebooksListViewController: UIViewController, UITableViewDataSource {
 
     /// The `Notebook` objects being presented
     var notebooks: [Notebook] = []
+    
+    var dataController: DataController!
 
     override func viewDidLoad() {
         super.viewDidLoad()

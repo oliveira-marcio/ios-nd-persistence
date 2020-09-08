@@ -11,7 +11,7 @@
         <relationship name="notes" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="Note" inverseName="notebook" inverseEntity="Note"/>
     </entity>
     <elements>
-        <element name="Notebook" positionX="-246.73046875" positionY="-6.2578125" width="128" height="88"/>
         <element name="Note" positionX="-50.96875" positionY="-6.15625" width="128" height="88"/>
+        <element name="Notebook" positionX="-246.73046875" positionY="-6.2578125" width="128" height="88"/>
     </elements>
 </model>

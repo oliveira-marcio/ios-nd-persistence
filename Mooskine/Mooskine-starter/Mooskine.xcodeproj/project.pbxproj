@@ -18,7 +18,7 @@
 		03B2699E1F2F8AAA00C7433C /* NotebookCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B269951F2F837C00C7433C /* NotebookCell.swift */; };
 		03B2699F1F2F8AAA00C7433C /* NoteCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B269961F2F837C00C7433C /* NoteCell.swift */; };
 		03B269A01F2F8AAD00C7433C /* Cell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B269981F2F837C00C7433C /* Cell.swift */; };
-		9C4AE0F92506B32A00BF1963 /* Moonskine.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 9C4AE0F72506B32A00BF1963 /* Moonskine.xcdatamodeld */; };
+		9C4AE0F92506B32A00BF1963 /* Mooskine.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 9C4AE0F72506B32A00BF1963 /* Mooskine.xcdatamodeld */; };
 		9CDABD8A2507636800CBAD5E /* DataController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CDABD892507636800CBAD5E /* DataController.swift */; };
 		A76557E71F8BC1FB00EFF9B8 /* OpenSans-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = A76557E51F8BC1AC00EFF9B8 /* OpenSans-Bold.ttf */; };
 		A76557E81F8BC1FB00EFF9B8 /* OpenSans-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = A76557E61F8BC1AC00EFF9B8 /* OpenSans-Regular.ttf */; };
@@ -140,7 +140,7 @@
 		03B2698C1F2F831700C7433C /* Model */ = {
 			isa = PBXGroup;
 			children = (
-				9C4AE0F72506B32A00BF1963 /* Moonskine.xcdatamodeld */,
+				9C4AE0F72506B32A00BF1963 /* Mooskine.xcdatamodeld */,
 				9CDABD892507636800CBAD5E /* DataController.swift */,
 			);
 			path = Model;
@@ -293,7 +293,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				039B105C1EDC5469002EA94F /* AppDelegate.swift in Sources */,
-				9C4AE0F92506B32A00BF1963 /* Moonskine.xcdatamodeld in Sources */,
+				9C4AE0F92506B32A00BF1963 /* Mooskine.xcdatamodeld in Sources */,
 				03B2699E1F2F8AAA00C7433C /* NotebookCell.swift in Sources */,
 				03B2699B1F2F8AA100C7433C /* NotebooksListViewController.swift in Sources */,
 				9CDABD8A2507636800CBAD5E /* DataController.swift in Sources */,
@@ -546,13 +546,13 @@
 /* End XCConfigurationList section */
 
 /* Begin XCVersionGroup section */
-		9C4AE0F72506B32A00BF1963 /* Moonskine.xcdatamodeld */ = {
+		9C4AE0F72506B32A00BF1963 /* Mooskine.xcdatamodeld */ = {
 			isa = XCVersionGroup;
 			children = (
 				9C4AE0F82506B32A00BF1963 /* Moonskine.xcdatamodel */,
 			);
 			currentVersion = 9C4AE0F82506B32A00BF1963 /* Moonskine.xcdatamodel */;
-			path = Moonskine.xcdatamodeld;
+			path = Mooskine.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;
 		};

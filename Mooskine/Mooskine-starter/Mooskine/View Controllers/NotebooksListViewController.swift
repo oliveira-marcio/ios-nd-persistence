@@ -9,7 +9,7 @@
 import UIKit
 import CoreData
 
-class NotebooksListViewController: UIViewController, UITableViewDataSource {
+class NotebooksListViewController: UIViewController, UITableViewDataSource, NSFetchedResultsControllerDelegate {
     /// A table view that displays a list of notebooks
     @IBOutlet weak var tableView: UITableView!
 
@@ -18,10 +18,14 @@ class NotebooksListViewController: UIViewController, UITableViewDataSource {
     
     var dataController: DataController!
     
+    var fetchedResultsController: NSFetchedResultsController<Notebook>!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         navigationItem.titleView = UIImageView(image: #imageLiteral(resourceName: "toolbar-cow"))
         navigationItem.rightBarButtonItem = editButtonItem
+        
+        setupFetchedResultsController()
         
         reloadNotebooks()
     }
@@ -38,6 +42,20 @@ class NotebooksListViewController: UIViewController, UITableViewDataSource {
         updateEditButtonState()
     }
     
+    fileprivate func setupFetchedResultsController() {
+        let fetchRequest: NSFetchRequest<Notebook> = Notebook.fetchRequest()
+        let sortDescriptor = NSSortDescriptor(key: "creationDate", ascending: false)
+        fetchRequest.sortDescriptors = [sortDescriptor]
+        
+        fetchedResultsController = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: dataController.viewContext, sectionNameKeyPath: nil, cacheName: nil)
+        fetchedResultsController.delegate = self
+        do {
+            try fetchedResultsController.performFetch()
+        } catch {
+            fatalError("The fetch could not be performed: \(error.localizedDescription)")
+        }
+    }
+    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
@@ -45,6 +63,11 @@ class NotebooksListViewController: UIViewController, UITableViewDataSource {
             tableView.deselectRow(at: indexPath, animated: false)
             tableView.reloadRows(at: [indexPath], with: .fade)
         }
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        fetchedResultsController = nil
     }
 
     // -------------------------------------------------------------------------

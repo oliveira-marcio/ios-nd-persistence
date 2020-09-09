@@ -17,12 +17,16 @@ class NotebooksListViewController: UIViewController, UITableViewDataSource {
     var notebooks: [Notebook] = []
     
     var dataController: DataController!
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         navigationItem.titleView = UIImageView(image: #imageLiteral(resourceName: "toolbar-cow"))
         navigationItem.rightBarButtonItem = editButtonItem
         
+        reloadNotebooks()
+    }
+
+    fileprivate func reloadNotebooks() {
         let fetchRequest: NSFetchRequest<Notebook> = Notebook.fetchRequest()
         let sortDescriptor = NSSortDescriptor(key: "creationDate", ascending: false)
         fetchRequest.sortDescriptors = [sortDescriptor]
@@ -33,7 +37,7 @@ class NotebooksListViewController: UIViewController, UITableViewDataSource {
         
         updateEditButtonState()
     }
-
+    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
@@ -90,9 +94,8 @@ class NotebooksListViewController: UIViewController, UITableViewDataSource {
         notebook.name = name
         notebook.creationDate = Date()
         try? dataController.viewContext.save()
-        notebooks.insert(notebook, at: 0)
-        tableView.insertRows(at: [IndexPath(row: 0, section: 0)], with: .fade)
-        updateEditButtonState()
+        
+        reloadNotebooks()
     }
 
     /// Deletes the notebook at the specified index path

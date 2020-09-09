@@ -12,9 +12,6 @@ import CoreData
 class NotebooksListViewController: UIViewController, UITableViewDataSource, NSFetchedResultsControllerDelegate {
     /// A table view that displays a list of notebooks
     @IBOutlet weak var tableView: UITableView!
-
-    /// The `Notebook` objects being presented
-    var notebooks: [Notebook] = []
     
     var dataController: DataController!
     
@@ -26,20 +23,6 @@ class NotebooksListViewController: UIViewController, UITableViewDataSource, NSFe
         navigationItem.rightBarButtonItem = editButtonItem
         
         setupFetchedResultsController()
-        
-        reloadNotebooks()
-    }
-
-    fileprivate func reloadNotebooks() {
-        let fetchRequest: NSFetchRequest<Notebook> = Notebook.fetchRequest()
-        let sortDescriptor = NSSortDescriptor(key: "creationDate", ascending: false)
-        fetchRequest.sortDescriptors = [sortDescriptor]
-        if let results = try? dataController.viewContext.fetch(fetchRequest) {
-            notebooks = results
-            tableView.reloadData()
-        }
-        
-        updateEditButtonState()
     }
     
     fileprivate func setupFetchedResultsController() {
@@ -117,25 +100,19 @@ class NotebooksListViewController: UIViewController, UITableViewDataSource, NSFe
         notebook.name = name
         notebook.creationDate = Date()
         try? dataController.viewContext.save()
-        
-        reloadNotebooks()
     }
 
     /// Deletes the notebook at the specified index path
     func deleteNotebook(at indexPath: IndexPath) {
-        let notebookToDelete = notebook(at: indexPath)
+        let notebookToDelete = fetchedResultsController.object(at: indexPath)
         dataController.viewContext.delete(notebookToDelete)
         try? dataController.viewContext.save()
-        notebooks.remove(at: indexPath.row)
-        tableView.deleteRows(at: [indexPath], with: .fade)
-        if numberOfNotebooks == 0 {
-            setEditing(false, animated: true)
-        }
-        updateEditButtonState()
     }
 
     func updateEditButtonState() {
-        navigationItem.rightBarButtonItem?.isEnabled = numberOfNotebooks > 0
+        if let sections = fetchedResultsController.sections {
+            navigationItem.rightBarButtonItem?.isEnabled = sections[0].numberOfObjects > 0
+        }
     }
 
     override func setEditing(_ editing: Bool, animated: Bool) {
@@ -147,15 +124,15 @@ class NotebooksListViewController: UIViewController, UITableViewDataSource, NSFe
     // MARK: - Table view data source
 
     func numberOfSections(in tableView: UITableView) -> Int {
-        return 1
+        return fetchedResultsController.sections?.count ?? 1
     }
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return numberOfNotebooks
+        return fetchedResultsController.sections?[section].numberOfObjects ?? 0
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let aNotebook = notebook(at: indexPath)
+        let aNotebook = fetchedResultsController.object(at: indexPath)
         let cell = tableView.dequeueReusableCell(withIdentifier: NotebookCell.defaultReuseIdentifier, for: indexPath) as! NotebookCell
 
         // Configure cell
@@ -175,14 +152,6 @@ class NotebooksListViewController: UIViewController, UITableViewDataSource, NSFe
         }
     }
 
-    // Helper
-
-    var numberOfNotebooks: Int { return notebooks.count }
-
-    func notebook(at indexPath: IndexPath) -> Notebook {
-        return notebooks[indexPath.row]
-    }
-
     // -------------------------------------------------------------------------
     // MARK: - Navigation
 
@@ -190,7 +159,7 @@ class NotebooksListViewController: UIViewController, UITableViewDataSource, NSFe
         // If this is a NotesListViewController, we'll configure its `Notebook`
         if let vc = segue.destination as? NotesListViewController {
             if let indexPath = tableView.indexPathForSelectedRow {
-                vc.notebook = notebook(at: indexPath)
+                vc.notebook = fetchedResultsController.object(at: indexPath)
                 vc.dataController = dataController
             }
         }

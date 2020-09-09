@@ -21,8 +21,6 @@ class NotebooksListViewController: UIViewController, UITableViewDataSource, NSFe
         super.viewDidLoad()
         navigationItem.titleView = UIImageView(image: #imageLiteral(resourceName: "toolbar-cow"))
         navigationItem.rightBarButtonItem = editButtonItem
-        
-        setupFetchedResultsController()
     }
     
     fileprivate func setupFetchedResultsController() {
@@ -41,6 +39,7 @@ class NotebooksListViewController: UIViewController, UITableViewDataSource, NSFe
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        setupFetchedResultsController()
 
         if let indexPath = tableView.indexPathForSelectedRow {
             tableView.deselectRow(at: indexPath, animated: false)
@@ -162,6 +161,27 @@ class NotebooksListViewController: UIViewController, UITableViewDataSource, NSFe
                 vc.notebook = fetchedResultsController.object(at: indexPath)
                 vc.dataController = dataController
             }
+        }
+    }
+}
+
+extension NotebooksListViewController {
+    func controllerWillChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
+        tableView.beginUpdates()
+    }
+    
+    func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
+        tableView.endUpdates()
+    }
+    
+    func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, didChange anObject: Any, at indexPath: IndexPath?, for type: NSFetchedResultsChangeType, newIndexPath: IndexPath?) {
+        switch type {
+        case .insert:
+            tableView.insertRows(at: [newIndexPath!], with: .fade)
+        case .delete:
+            tableView.deleteRows(at: [indexPath!], with: .fade)
+        default:
+            break
         }
     }
 }

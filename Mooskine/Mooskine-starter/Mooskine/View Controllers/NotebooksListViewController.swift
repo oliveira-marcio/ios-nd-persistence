@@ -33,6 +33,11 @@ class NotebooksListViewController: UIViewController {
         }
     }
     
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        listDataSource.releaseFetchedResultsController()
+    }
+
     fileprivate func setupFetchedResultsController() {
         let fetchRequest: NSFetchRequest<Notebook> = Notebook.fetchRequest()
         let sortDescriptor = NSSortDescriptor(key: "creationDate", ascending: false)
@@ -55,11 +60,6 @@ class NotebooksListViewController: UIViewController {
             let pageString = count == 1 ? "page" : "pages"
             cell.pageCountLabel.text = "\(count) \(pageString)"
         }
-    }
-    
-    override func viewDidDisappear(_ animated: Bool) {
-        super.viewDidDisappear(animated)
-        listDataSource.releaseFetchedResultsController()
     }
 
     // -------------------------------------------------------------------------

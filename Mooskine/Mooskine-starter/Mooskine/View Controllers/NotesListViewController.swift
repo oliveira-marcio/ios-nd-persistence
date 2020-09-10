@@ -110,6 +110,7 @@ class NotesListViewController: UIViewController {
 
                 vc.onDelete = { [weak self] in
                     if let indexPath = self?.tableView.indexPathForSelectedRow {
+                        self?.setupFetchedResultsController()
                         self?.listDataSource.deleteItem(at: indexPath)
                         self?.navigationController?.popViewController(animated: true)
                     }

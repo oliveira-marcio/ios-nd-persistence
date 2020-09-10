@@ -70,7 +70,7 @@ class NotesListViewController: UIViewController {
     }
 
     func configureTableViewCell(cell: NoteCell, note: Note) {
-        cell.textPreviewLabel.text = note.text
+        cell.textPreviewLabel.attributedText = note.attributedText
         if let creationDate = note.creationDate {
             cell.dateLabel.text = dateFormatter.string(from: creationDate)
         }

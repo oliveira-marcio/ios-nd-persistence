@@ -56,7 +56,7 @@ class ListDataSource<ObjectType: NSManagedObject, CellType: UITableViewCell>: NS
     /// Adds a new `Note` to the end of the `notebook`'s `notes` array
     func addNote(notebook: Notebook) {
         let note = Note(context: managedObjectContext)
-        note.text = "New Note"
+        note.attributedText = NSAttributedString(string: "New Note")
         note.creationDate = Date()
         note.notebook = notebook
         

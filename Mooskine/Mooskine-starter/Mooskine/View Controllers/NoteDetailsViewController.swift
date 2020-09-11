@@ -14,8 +14,8 @@ class NoteDetailsViewController: UIViewController {
 
     /// The note being displayed and edited
     var note: Note!
-    
-    var dataController: DataController!
+
+    var listDataSource: ListDataSource<Note, NoteCell>!
 
     /// A closure that is run when the user asks to delete the current note
     var onDelete: (() -> Void)?
@@ -69,9 +69,7 @@ extension NoteDetailsViewController {
 
 extension NoteDetailsViewController: UITextViewDelegate {
     func textViewDidEndEditing(_ textView: UITextView) {
-        note.attributedText = textView.attributedText
-//        try? note.managedObjectContext?.save() // It always works, since note has reference to viewContext
-        try? dataController.viewContext.save()
+        listDataSource.updateNote(note, with: textView.attributedText)
     }
 }
 
@@ -111,49 +109,6 @@ extension NoteDetailsViewController {
         showDeleteAlert()
     }
 
-    @IBAction func boldTapped(sender: Any) {
-        let newText = textView.attributedText.mutableCopy() as! NSMutableAttributedString
-        newText.addAttribute(.font, value: UIFont(name: "OpenSans-Bold", size: 22)!, range: textView.selectedRange)
-
-        let selectedTextRange = textView.selectedTextRange
-
-        textView.attributedText = newText
-        textView.selectedTextRange = selectedTextRange
-        note.attributedText = textView.attributedText
-        try? dataController.viewContext.save()
-    }
-
-    @IBAction func redTapped(sender: Any) {
-        let newText = textView.attributedText.mutableCopy() as! NSMutableAttributedString
-        let attributes: [NSAttributedString.Key: Any] = [
-            .foregroundColor: UIColor.red,
-            .underlineStyle: 1,
-            .underlineColor: UIColor.red
-        ]
-        newText.addAttributes(attributes, range: textView.selectedRange)
-
-        let selectedTextRange = textView.selectedTextRange
-
-        textView.attributedText = newText
-        textView.selectedTextRange = selectedTextRange
-        note.attributedText = textView.attributedText
-        try? dataController.viewContext.save()
-    }
-
-    @IBAction func cowTapped(sender: Any) {
-        let newText = textView.attributedText.mutableCopy() as! NSMutableAttributedString
-
-        let selectedRange = textView.selectedRange
-        let selectedText = textView.attributedText.attributedSubstring(from: selectedRange)
-        let cowText = Pathifier.makeMutableAttributedString(for: selectedText, withFont: UIFont(name: "AvenirNext-Heavy", size: 56)!, withPatternImage: #imageLiteral(resourceName: "texture-cow"))
-        newText.replaceCharacters(in: selectedRange, with: cowText)
-
-        textView.attributedText = newText
-        textView.selectedRange = NSMakeRange(selectedRange.location, 1)
-        note.attributedText = textView.attributedText
-        try? dataController.viewContext.save()
-    }
-
     // MARK: Helper methods for actions
     private func showDeleteAlert() {
         let alert = UIAlertController(title: "Delete Note?", message: "Are you sure you want to delete the current note?", preferredStyle: .alert)
@@ -167,5 +122,49 @@ extension NoteDetailsViewController {
         alert.addAction(cancelAction)
         alert.addAction(deleteAction)
         present(alert, animated: true, completion: nil)
+    }
+
+    @IBAction func boldTapped(sender: Any) {
+        let attributes: [NSAttributedString.Key: Any] = [
+            .font: UIFont(name: "OpenSans-Bold", size: 22)!
+        ]
+
+        completeRegularTextEditing(with: attributes)
+    }
+
+    @IBAction func redTapped(sender: Any) {
+        let attributes: [NSAttributedString.Key: Any] = [
+            .foregroundColor: UIColor.red,
+            .underlineStyle: 1,
+            .underlineColor: UIColor.red
+        ]
+
+        completeRegularTextEditing(with: attributes)
+    }
+
+    private func completeRegularTextEditing(with attributes: [NSAttributedString.Key : Any]) {
+        let newText = textView.attributedText.mutableCopy() as! NSMutableAttributedString
+        newText.addAttributes(attributes, range: textView.selectedRange)
+
+        let selectedTextRange = textView.selectedTextRange
+
+        textView.attributedText = newText
+        textView.selectedTextRange = selectedTextRange
+
+        listDataSource.updateNote(note, with: newText)
+    }
+    
+    @IBAction func cowTapped(sender: Any) {
+        let newText = textView.attributedText.mutableCopy() as! NSMutableAttributedString
+
+        let selectedRange = textView.selectedRange
+        let selectedText = textView.attributedText.attributedSubstring(from: selectedRange)
+        let cowText = Pathifier.makeMutableAttributedString(for: selectedText, withFont: UIFont(name: "AvenirNext-Heavy", size: 56)!, withPatternImage: #imageLiteral(resourceName: "texture-cow"))
+        newText.replaceCharacters(in: selectedRange, with: cowText)
+
+        textView.attributedText = newText
+        textView.selectedRange = NSMakeRange(selectedRange.location, 1)
+
+        listDataSource.updateNote(note, with: newText)
     }
 }

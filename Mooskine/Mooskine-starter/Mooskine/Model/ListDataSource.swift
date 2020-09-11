@@ -62,7 +62,12 @@ class ListDataSource<ObjectType: NSManagedObject, CellType: UITableViewCell>: NS
         
         try? managedObjectContext.save()
     }
-    
+
+    func updateNote(_ note: Note, with attributedText: NSAttributedString) {
+        note.attributedText = attributedText
+        try? managedObjectContext.save()
+    }
+
      /// Deletes the item at the specified index path
     func deleteItem(at indexPath: IndexPath) {
         let itemToDelete = fetchedResultsController.object(at: indexPath)

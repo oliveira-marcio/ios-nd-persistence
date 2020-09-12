@@ -107,6 +107,7 @@ class NotesListViewController: UIViewController {
             if let indexPath = tableView.indexPathForSelectedRow {
                 vc.note = listDataSource.getItem(at: indexPath)
                 vc.listDataSource = listDataSource
+                vc.dataController = dataController
 
                 vc.onDelete = { [weak self] in
                     if let indexPath = self?.tableView.indexPathForSelectedRow {

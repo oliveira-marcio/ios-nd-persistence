@@ -60,7 +60,7 @@ class NotesListViewController: UIViewController {
         
         listDataSource = ListDataSource(
             tableView: tableView,
-            managedObjectContext: dataController.viewContext,
+            dataController: dataController,
             fetchRequest: fetchRequest,
             cacheName: "note from \(notebook.name ?? "")",
             configure: configureTableViewCell(cell:note:)

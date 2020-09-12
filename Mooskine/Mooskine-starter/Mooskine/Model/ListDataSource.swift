@@ -12,25 +12,27 @@ import UIKit
 
 class ListDataSource<ObjectType: NSManagedObject, CellType: UITableViewCell>: NSObject, UITableViewDataSource, NSFetchedResultsControllerDelegate {
     
-    private var managedObjectContext: NSManagedObjectContext!
+    private var viewManagedObjectContext: NSManagedObjectContext!
+    private var backgroundManagedObjectContext: NSManagedObjectContext!
     private var fetchedResultsController: NSFetchedResultsController<ObjectType>!
     private var tableView: UITableView!
     private var configureFunction: (CellType, ObjectType) -> Void
     
     init(
         tableView: UITableView,
-        managedObjectContext: NSManagedObjectContext,
+        dataController: DataController,
         fetchRequest: NSFetchRequest<ObjectType>,
         cacheName: String,
         configure: @escaping (CellType, ObjectType) -> Void
     ) {
-        self.managedObjectContext = managedObjectContext
+        self.viewManagedObjectContext = dataController.viewContext
+        self.backgroundManagedObjectContext = dataController.backgroundContext
         self.tableView = tableView
         self.configureFunction = configure
         
         super.init()
         
-        fetchedResultsController = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: managedObjectContext, sectionNameKeyPath: nil, cacheName: cacheName)
+        fetchedResultsController = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: viewManagedObjectContext, sectionNameKeyPath: nil, cacheName: cacheName)
         fetchedResultsController.delegate = self
         
         do {
@@ -46,33 +48,33 @@ class ListDataSource<ObjectType: NSManagedObject, CellType: UITableViewCell>: NS
     
      /// Adds a new notebook to the end of the `notebooks` array
     func addNotebook(name: String) {
-        let notebook = Notebook(context: managedObjectContext)
+        let notebook = Notebook(context: viewManagedObjectContext)
         notebook.name = name
         notebook.creationDate = Date()
         
-        try? managedObjectContext.save()
+        try? viewManagedObjectContext.save()
     }
     
     /// Adds a new `Note` to the end of the `notebook`'s `notes` array
     func addNote(notebook: Notebook) {
-        let note = Note(context: managedObjectContext)
+        let note = Note(context: viewManagedObjectContext)
         note.attributedText = NSAttributedString(string: "New Note")
         note.creationDate = Date()
         note.notebook = notebook
         
-        try? managedObjectContext.save()
+        try? viewManagedObjectContext.save()
     }
 
     func updateNote(_ note: Note, with attributedText: NSAttributedString) {
         note.attributedText = attributedText
-        try? managedObjectContext.save()
+        try? viewManagedObjectContext.save()
     }
 
      /// Deletes the item at the specified index path
     func deleteItem(at indexPath: IndexPath) {
         let itemToDelete = fetchedResultsController.object(at: indexPath)
-        managedObjectContext.delete(itemToDelete)
-        try? managedObjectContext.save()
+        viewManagedObjectContext.delete(itemToDelete)
+        try? viewManagedObjectContext.save()
     }
     
     func getItem(at indexPath: IndexPath) -> ObjectType {

@@ -45,7 +45,7 @@ class NotebooksListViewController: UIViewController {
         
         listDataSource = ListDataSource(
             tableView: tableView,
-            managedObjectContext: dataController.viewContext,
+            dataController: dataController,
             fetchRequest: fetchRequest,
             cacheName: "notebooks",
             configure: configureTableViewCell(cell:notebook:)

@@ -70,6 +70,15 @@ class ListDataSource<ObjectType: NSManagedObject, CellType: UITableViewCell>: NS
         try? viewManagedObjectContext.save()
     }
 
+    func updateNote(_ note: Note, with processedAttributedText: @escaping () -> NSAttributedString) {
+        backgroundManagedObjectContext.perform {
+            let backgroundNote = self.backgroundManagedObjectContext.object(with: note.objectID) as! Note
+            backgroundNote.attributedText = processedAttributedText()
+            
+            try?self.backgroundManagedObjectContext.save()
+        }
+    }
+
      /// Deletes the item at the specified index path
     func deleteItem(at indexPath: IndexPath) {
         let itemToDelete = fetchedResultsController.object(at: indexPath)

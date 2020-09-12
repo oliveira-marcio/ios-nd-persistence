@@ -166,33 +166,20 @@ extension NoteDetailsViewController {
     }
     
     @IBAction func cowTapped(sender: Any) {
-        let backgroundContext: NSManagedObjectContext! = dataController.backgroundContext
-
         let newText = textView.attributedText.mutableCopy() as! NSMutableAttributedString
 
         let selectedRange = textView.selectedRange
         let selectedText = textView.attributedText.attributedSubstring(from: selectedRange)
 
-        let noteId = note.objectID
-
-        backgroundContext.perform {
-            let backgroundNote = backgroundContext.object(with: noteId) as! Note
-
+        listDataSource.updateNote(note) { () -> NSAttributedString in
             let cowText = Pathifier.makeMutableAttributedString(for: selectedText, withFont: UIFont(name: "AvenirNext-Heavy", size: 56)!, withPatternImage: #imageLiteral(resourceName: "texture-cow"))
             newText.replaceCharacters(in: selectedRange, with: cowText)
 
             // Simulate a heavy task
             sleep(5)
 
-            backgroundNote.attributedText = newText
-            try? backgroundContext.save()
-
+            return newText
         }
-
-//        textView.attributedText = newText
-//        textView.selectedRange = NSMakeRange(selectedRange.location, 1)
-
-//        listDataSource.updateNote(note, with: newText)
     }
 }
 

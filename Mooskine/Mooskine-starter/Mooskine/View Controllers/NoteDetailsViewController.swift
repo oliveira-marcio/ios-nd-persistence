@@ -17,7 +17,10 @@ class NoteDetailsViewController: UIViewController {
     var note: Note!
 
     var listDataSource: ListDataSource<Note, NoteCell>!
+
     var dataController: DataController!
+
+    var saveObserverToken: Any?
 
     /// A closure that is run when the user asks to delete the current note
     var onDelete: (() -> Void)?
@@ -43,6 +46,12 @@ class NoteDetailsViewController: UIViewController {
         // keyboard toolbar configuration
         configureToolbarItems()
         configureTextViewInputAccessoryView()
+
+        addSaveNotificationObserver()
+    }
+
+    deinit {
+        removeSaveNotificationObserver()
     }
 
     @IBAction func deleteNote(sender: Any) {
@@ -172,6 +181,7 @@ extension NoteDetailsViewController {
             let cowText = Pathifier.makeMutableAttributedString(for: selectedText, withFont: UIFont(name: "AvenirNext-Heavy", size: 56)!, withPatternImage: #imageLiteral(resourceName: "texture-cow"))
             newText.replaceCharacters(in: selectedRange, with: cowText)
 
+            // Simulate a heavy task
             sleep(5)
 
             backgroundNote.attributedText = newText
@@ -183,5 +193,28 @@ extension NoteDetailsViewController {
 //        textView.selectedRange = NSMakeRange(selectedRange.location, 1)
 
 //        listDataSource.updateNote(note, with: newText)
+    }
+}
+
+extension NoteDetailsViewController {
+    func addSaveNotificationObserver() {
+        removeSaveNotificationObserver()
+        saveObserverToken = NotificationCenter.default.addObserver(forName: .NSManagedObjectContextObjectsDidChange, object: dataController.viewContext, queue: nil, using: handleNotification(notification:))
+    }
+
+    func removeSaveNotificationObserver() {
+        if let token = saveObserverToken {
+            NotificationCenter.default.removeObserver(token)
+        }
+    }
+
+    fileprivate func reloadText() {
+        textView.attributedText = note.attributedText
+    }
+
+    func handleNotification(notification: Notification) {
+        DispatchQueue.main.async {
+            self.reloadText()
+        }
     }
 }

@@ -48,26 +48,32 @@ class ListDataSource<ObjectType: NSManagedObject, CellType: UITableViewCell>: NS
     
      /// Adds a new notebook to the end of the `notebooks` array
     func addNotebook(name: String) {
-        let notebook = Notebook(context: viewManagedObjectContext)
-        notebook.name = name
-        notebook.creationDate = Date()
-        
-        try? viewManagedObjectContext.save()
+        viewManagedObjectContext.perform {
+            let notebook = Notebook(context: self.viewManagedObjectContext)
+            notebook.name = name
+            notebook.creationDate = Date()
+
+            try? self.viewManagedObjectContext.save()
+        }
     }
     
     /// Adds a new `Note` to the end of the `notebook`'s `notes` array
     func addNote(notebook: Notebook) {
-        let note = Note(context: viewManagedObjectContext)
-        note.attributedText = NSAttributedString(string: "New Note")
-        note.creationDate = Date()
-        note.notebook = notebook
-        
-        try? viewManagedObjectContext.save()
+        viewManagedObjectContext.perform {
+            let note = Note(context: self.viewManagedObjectContext)
+            note.attributedText = NSAttributedString(string: "New Note")
+            note.creationDate = Date()
+            note.notebook = notebook
+
+            try? self.viewManagedObjectContext.save()
+        }
     }
 
     func updateNote(_ note: Note, with attributedText: NSAttributedString) {
-        note.attributedText = attributedText
-        try? viewManagedObjectContext.save()
+        viewManagedObjectContext.perform {
+            note.attributedText = attributedText
+            try? self.viewManagedObjectContext.save()
+        }
     }
 
     func updateNote(_ note: Note, with processedAttributedText: @escaping () -> NSAttributedString) {
@@ -82,8 +88,11 @@ class ListDataSource<ObjectType: NSManagedObject, CellType: UITableViewCell>: NS
      /// Deletes the item at the specified index path
     func deleteItem(at indexPath: IndexPath) {
         let itemToDelete = fetchedResultsController.object(at: indexPath)
-        viewManagedObjectContext.delete(itemToDelete)
-        try? viewManagedObjectContext.save()
+        self.viewManagedObjectContext.delete(itemToDelete)
+
+        viewManagedObjectContext.perform {
+            try? self.viewManagedObjectContext.save()
+        }
     }
     
     func getItem(at indexPath: IndexPath) -> ObjectType {

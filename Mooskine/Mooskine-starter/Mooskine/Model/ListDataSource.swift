@@ -74,7 +74,7 @@ class ListDataSource<ObjectType: NSManagedObject, CellType: UITableViewCell>: NS
         backgroundManagedObjectContext.perform {
             let backgroundNote = self.backgroundManagedObjectContext.object(with: note.objectID) as! Note
             backgroundNote.attributedText = processedAttributedText()
-            
+
             try?self.backgroundManagedObjectContext.save()
         }
     }
@@ -152,6 +152,26 @@ class ListDataSource<ObjectType: NSManagedObject, CellType: UITableViewCell>: NS
         case .delete: tableView.deleteSections(indexSet, with: .fade)
         default:
             fatalError("Invalid change type in controller(_:didChange:atSectionIndex:for:). Only .insert or .delete should be possible.")
+        }
+    }
+
+    private var saveObserverTokens = [String: Any]()
+
+    // MARK: - ManagedObjectContext Changes Notifications
+    
+    func addSaveNotificationObserver(key: String, handler: @escaping (Notification) -> Void) {
+        removeSaveNotificationObserver(key: key)
+        saveObserverTokens[key] = NotificationCenter.default.addObserver(forName: .NSManagedObjectContextObjectsDidChange, object: viewManagedObjectContext, queue: nil) { notification in
+            DispatchQueue.main.async {
+                handler(notification)
+            }
+        }
+    }
+
+    func removeSaveNotificationObserver(key: String) {
+        if let token = saveObserverTokens[key] {
+            NotificationCenter.default.removeObserver(token)
+            saveObserverTokens.removeValue(forKey: key)
         }
     }
 }
